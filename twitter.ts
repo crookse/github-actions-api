@@ -19,6 +19,7 @@ const params = [
 
 const s1 = getSignaturePart1();
 const s2 = getSignaturePart2(params);
+console.log(s2);
 const s3 = getSignaturePart3(apiSecret, accessTokenSecret);
 const oAuthSignature = getOAuthSignature(s3, s1 + s2);
 
@@ -40,7 +41,8 @@ function getSignaturePart1(): string {
 
 function getSignaturePart2(params: string[]): string {
   const encoded = params.map((value: string) => {
-    return encodeURIComponent(value).replace(/!/g, "%21");
+    return encodeURIComponent(value)
+      .replace(/!/g, "%21");
   });
 
   encoded[encoded.length - 1] = encodeURIComponent("status=") +
@@ -69,7 +71,7 @@ async function tweet(
   const authorizationHeader = "OAuth " + params.join(",");
 
   const res = await fetch(
-    "https://api.twitter.com/1.1/statuses/update.json?status=" + tweetMessage,
+    "https://api.twitter.com/1.1/statuses/update.json?status=" + encodeURIComponent(tweetMessage).replace(/!/g, "%21"),
     {
       method: "POST",
       headers: {
