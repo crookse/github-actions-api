@@ -25,7 +25,7 @@ jobs:
           ${{ secrets.REDDIT_PASSWORD }} \
           ${{ secrets.REDDIT_APP_ID }} \
           ${{ secrets.REDDIT_APP_SECRET }} \
-          "Drash"
+          "drash"
 
       - name: Post to Twitter
         run: deno run --allow-net ./twitter.ts \
