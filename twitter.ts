@@ -6,15 +6,16 @@ const apiSecret = args[1];
 const accessToken = args[2];
 const accessTokenSecret = args[3];
 const tweet = args[4];
+const timestamp = ${Math.floor(new Date().getTime() / 1000).toString()};
 
 let sigPart1 = `POST&${
   encodeURIComponent("https://api.twitter.com/1.1/statuses/update.json")
 }&`;
 let sigPart2 = [
   `oauth_consumer_key=${apiKey}`,
-  `oauth_nonce=asdfasfasdfasdf`,
+  `oauth_nonce=${timestamp}`,
   `oauth_signature_method=HMAC-SHA1`,
-  `oauth_timestamp=${Math.floor(new Date().getTime() / 1000).toString()}`,
+  `oauth_timestamp=${timestamp}`,
   `oauth_token=${accessToken}`,
   `oauth_version=1.0`,
   `${tweet}`,
