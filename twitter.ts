@@ -1,18 +1,23 @@
 import { hmac } from "https://denopkg.com/chiefbiiko/hmac@v1.0.2/mod.ts";
 
-const args = Deno.args.slice();
+let args = Deno.args.slice();
+args = args.map((arg: string) => {
+  return arg.trim();
+});
+
 const apiKey = args[0];
 const apiSecret = args[1];
 const accessToken = args[2];
 const accessTokenSecret = args[3];
-const repo = args[4].trim();
+const repo = args[4];
+
 const timestamp = Math.floor(new Date().getTime() / 1000).toString();
 const params = [
-  `oauth_consumer_key=${apiKey.trim()}`,
+  `oauth_consumer_key=${apiKey}`,
   `oauth_nonce=${timestamp}`,
   `oauth_signature_method=HMAC-SHA1`,
   `oauth_timestamp=${timestamp}`,
-  `oauth_token=${accessToken.trim()}`,
+  `oauth_token=${accessToken}`,
   `oauth_version=1.0`,
   `${buildTweet(repo)}`,
 ];
@@ -88,8 +93,8 @@ function getSigningKey(
   apiSecret: string,
   accessTokenSecret: string,
 ): string {
-  return `${encodeURIComponent(apiSecret.trim())}&${
-    encodeURIComponent(accessTokenSecret.trim())
+  return `${encodeURIComponent(apiSecret)}&${
+    encodeURIComponent(accessTokenSecret)
   }`;
 }
 

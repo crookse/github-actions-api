@@ -19,13 +19,13 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
-      # - name: Post to Reddit
-      #   run: deno run --allow-net ./reddit.ts \
-      #     ${{ secrets.REDDIT_USERNAME }} \
-      #     ${{ secrets.REDDIT_PASSWORD }} \
-      #     ${{ secrets.REDDIT_APP_ID }} \
-      #     ${{ secrets.REDDIT_APP_SECRET }} \
-      #     "deno-drash"
+      - name: Post to Reddit
+        run: deno run --allow-net ./reddit.ts \
+          ${{ secrets.REDDIT_USERNAME }} \
+          ${{ secrets.REDDIT_PASSWORD }} \
+          ${{ secrets.REDDIT_APP_ID }} \
+          ${{ secrets.REDDIT_APP_SECRET }} \
+          "deno-drash"
 
       - name: Post to Twitter
         run: deno run --allow-net ./twitter.ts \

@@ -8,12 +8,16 @@ interface IPost {
   url: string;
 }
 
-const args = Deno.args.slice();
-const username = args[0].trim();
-const password = args[1].trim(); // need to change the password
-const appId = args[2].trim();
-const appSecret= args[3].trim();
-const repo = args[4].trim();
+let args = Deno.args.slice();
+args = args.map((arg: string) => {
+  return arg.trim();
+});
+
+const username = args[0];
+const password = args[1];
+const appId = args[2];
+const appSecret= args[3];
+const repo = args[4];
 
 await postToReddit({
   access_token: await getAccessToken(),
