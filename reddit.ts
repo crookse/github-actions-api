@@ -1,19 +1,17 @@
 const args = Deno.args.slice();
 const username = args[0];
-const password = args[1];
+const password = args[1]; // need to change the password
 const appId = args[2];
 const appSecret= args[3];
 const moduleName = args[4];
 
 let postTitle: string;
-let postText: string;
 let postUrl: string;
 
 switch (moduleName) {
   case "drash":
     postTitle = "New Drash version released!";
-    postText = "Check out our latest release @ https://github.com/drashland/deno-drash/releases/latest";
-    postUrl = "https://drash.land/drash";
+    postUrl = "https://github.com/drashland/deno-drash/releases/latest";
     break;
   default:
     throw new Error("Unknown module specified.");
@@ -52,7 +50,7 @@ async function post(accessToken: string) {
         "Authorization": "Bearer " + accessToken,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: `kind=link&title=${postTitle}&sr=Deno&text=${postText}&url=${postUrl}`,
+      body: `kind=link&title=${postTitle}&sr=Deno&url=${postUrl}`,
     },
   );
 
