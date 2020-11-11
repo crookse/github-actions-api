@@ -6,7 +6,7 @@ const apiSecret = args[1];
 const accessToken = args[2];
 const accessTokenSecret = args[3];
 const tweet = args[4];
-const timestamp = ${Math.floor(new Date().getTime() / 1000).toString()};
+const timestamp = Math.floor(new Date().getTime() / 1000).toString();
 
 let sigPart1 = `POST&${
   encodeURIComponent("https://api.twitter.com/1.1/statuses/update.json")
