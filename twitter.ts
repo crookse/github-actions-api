@@ -30,6 +30,8 @@ await postToTwitter(
 function buildTweet(repo: string): string {
   let tweet = "New {{ title }} version released! https://github.com/drashland/{{ repo }}/releases/latest";
 
+  console.log(repo);
+
   switch (repo) {
     case "dawn":
       return replaceTweetFields(tweet, "Dawn", repo);
