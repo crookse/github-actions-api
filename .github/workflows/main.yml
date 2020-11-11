@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  post-release:
+  socials:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,7 +19,15 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
-      - name: Run script
+      - name: Post to Reddit
+        run: deno run --allow-net ./twitter.ts \
+          ${{ secrets.REDDIT_USERNAME }} \
+          ${{ secrets.REDDIT_PASSWORD }} \
+          ${{ secrets.REDDIT_APP_ID }} \
+          ${{ secrets.REDDIT_APP_SECRET }} \
+          "Drash"
+
+      - name: Post to Twitter
         run: deno run --allow-net ./twitter.ts \
           ${{ secrets.TWITTER_CONSUMER_API_KEY }} \
           ${{ secrets.TWITTER_CONSUMER_API_SECRET }} \
