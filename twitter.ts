@@ -1,5 +1,7 @@
 import { hmac } from "https://denopkg.com/chiefbiiko/hmac/mod.ts";
 
+console.log(Deno.args);
+
 const args = Deno.args.slice();
 const apiKey = args[0];
 const apiSecret = args[1];
