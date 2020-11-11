@@ -43,6 +43,8 @@ function buildPost(repo: string): IPost {
     case "wocket":
       return replacePostFields(post, "Wocket", repo);
   }
+
+  throw new Error("Unknown module specified");
 }
 
 async function getAccessToken(): Promise<string> {

@@ -42,6 +42,8 @@ function buildTweet(repo: string): string {
     case "wocket":
       return replaceTweetFields(tweet, "Wocket", repo);
   }
+
+  throw new Error("Unknown module specified");
 }
 
 function getOAuthSignature(
