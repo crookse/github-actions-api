@@ -20,7 +20,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Post to Reddit
-        run: deno run --allow-net ./twitter.ts \
+        run: deno run --allow-net ./reddit.ts \
           ${{ secrets.REDDIT_USERNAME }} \
           ${{ secrets.REDDIT_PASSWORD }} \
           ${{ secrets.REDDIT_APP_ID }} \
