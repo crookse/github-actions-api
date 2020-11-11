@@ -20,7 +20,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Run script
-        run: deno run ./twitter.ts \
+        run: deno run --allow-net ./twitter.ts \
           ${{ secrets.TWITTER_CONSUMER_API_KEY }} \
           ${{ secrets.TWITTER_CONSUMER_API_SECRET }} \
           ${{ secrets.TWITTER_ACCESS_TOKEN }} \
