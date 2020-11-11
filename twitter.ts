@@ -1,56 +1,82 @@
 import { hmac } from "https://denopkg.com/chiefbiiko/hmac/mod.ts";
 
-console.log(Deno.args);
-
 const args = Deno.args.slice();
 const apiKey = args[0];
 const apiSecret = args[1];
 const accessToken = args[2];
 const accessTokenSecret = args[3];
-const tweet = args[4];
+const tweetMessage = args[4];
 const timestamp = Math.floor(new Date().getTime() / 1000).toString();
-
-let sigPart1 = `POST&${
-  encodeURIComponent("https://api.twitter.com/1.1/statuses/update.json")
-}&`;
-let sigPart2 = [
+const params = [
   `oauth_consumer_key=${apiKey.trim()}`,
   `oauth_nonce=${timestamp}`,
   `oauth_signature_method=HMAC-SHA1`,
   `oauth_timestamp=${timestamp}`,
   `oauth_token=${accessToken.trim()}`,
   `oauth_version=1.0`,
-  `${tweet}`,
+  `${tweetMessage}`,
 ];
-const sigPart2Encoded = sigPart2.map((value: string) => {
-  return encodeURIComponent(value).replace(/!/g, "%21");
-});
-sigPart2Encoded[sigPart2Encoded.length - 1] = encodeURIComponent("status=") +
-  encodeURIComponent(sigPart2Encoded[sigPart2Encoded.length - 1]);
 
-const key = `${apiSecret.trim()}&${accessTokenSecret.trim()}`;
-const message = sigPart1 + sigPart2Encoded.join("%26");
-const oAuthSignature = getOAuthSignature(key, message);
+const s1 = getSignaturePart1();
+const s2 = getSignaturePart2(params);
+const s3 = getSignaturePart3(apiSecret, accessTokenSecret);
+const oAuthSignature = getOAuthSignature(s3, s1 + s2);
 
-function getOAuthSignature(key: string, message: string): string | Uint8Array {
+await tweet(oAuthSignature, params, tweetMessage);
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - FUNCTIONS /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+function getOAuthSignature(key: string, message: string): string {
   return hmac("sha1", key, message, "utf8", "base64") + "%3D";
 }
 
-sigPart2.pop();
-sigPart2.push("oauth_signature=" + oAuthSignature);
+function getSignaturePart1(): string {
+  return `POST&${
+    encodeURIComponent("https://api.twitter.com/1.1/statuses/update.json")
+  }&`;
+}
 
-const oAuthHeader = sigPart2.join(",");
+function getSignaturePart2(params: string[]): string {
+  const encoded = params.map((value: string) => {
+    return encodeURIComponent(value).replace(/!/g, "%21");
+  });
 
-console.log(oAuthHeader);
+  encoded[encoded.length - 1] = encodeURIComponent("status=") +
+    encodeURIComponent(encoded[encoded.length - 1]);
 
-const res = await fetch(
-  "https://api.twitter.com/1.1/statuses/update.json?status=" + tweet,
-  {
-    method: "POST",
-    headers: {
-      "Authorization": "OAuth " + oAuthHeader,
+  return encoded.join("%26");
+}
+
+function getSignaturePart3(
+  apiSecret: string,
+  accessTokenSecret: string,
+): string {
+  return `${encodeURIComponent(apiSecret.trim())}&${
+    encodeURIComponent(accessTokenSecret.trim())
+  }`;
+}
+
+async function tweet(
+  oAuthSignature: string,
+  params: string[],
+  tweetMessage: string,
+) {
+  params.pop();
+  params.push("oauth_signature=" + oAuthSignature);
+
+  const authorizationHeader = "OAuth " + params.join(",");
+
+  const res = await fetch(
+    "https://api.twitter.com/1.1/statuses/update.json?status=" + tweetMessage,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": authorizationHeader,
+      },
     },
-  },
-);
+  );
 
-console.log(await res.json());
+  console.log(res);
+}
