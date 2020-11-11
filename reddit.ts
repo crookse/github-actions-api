@@ -1,18 +1,20 @@
 const args = Deno.args.slice();
-const username = args[0].trim();
-const password = args[1].trim(); // need to change the password
-const appId = args[2].trim();
-const appSecret= args[3].trim();
-const moduleName = args[4].trim();
-
-console.log(moduleName);
+const username = args[0];
+const password = args[1]; // need to change the password
+const appId = args[2];
+const appSecret= args[3];
+const moduleName = args[4];
 
 let postTitle: string;
 let postUrl: string;
 
-if (moduleName == "drash") {
-  postTitle = "New Drash version released!";
-  postUrl = "https://github.com/drashland/deno-drash/releases/latest";
+switch (moduleName) {
+  case "drash":
+    postTitle = "New Drash version released!";
+    postUrl = "https://github.com/drashland/deno-drash/releases/latest";
+    break;
+  default:
+    throw new Error("Unknown module specified.");
 }
 
 const accessToken = await getBearerToken();
@@ -25,7 +27,7 @@ await post(accessToken);
 
 async function getBearerToken(): Promise<string> {
   const res = await fetch(
-    `https://www.reddit.com/api/v1/access_token?grant_type=password&username=${username}&password=${password}`,
+    `https://www.reddit.com/api/v1/access_token?grant_type=password&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
     {
       method: "POST",
       headers: {
