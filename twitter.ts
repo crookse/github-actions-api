@@ -5,7 +5,7 @@ const apiKey = args[0];
 const apiSecret = args[1];
 const accessToken = args[2];
 const accessTokenSecret = args[3];
-const tweetMessage = args[4];
+const repo = args[4];
 const timestamp = Math.floor(new Date().getTime() / 1000).toString();
 const params = [
   `oauth_consumer_key=${apiKey.trim()}`,
@@ -14,32 +14,70 @@ const params = [
   `oauth_timestamp=${timestamp}`,
   `oauth_token=${accessToken.trim()}`,
   `oauth_version=1.0`,
-  `${tweetMessage}`,
+  `${buildTweet(repo)}`,
 ];
 
-const s1 = getSignaturePart1();
-const s2 = getSignaturePart2(params);
-console.log(s2);
-const s3 = getSignaturePart3(apiSecret, accessTokenSecret);
-const oAuthSignature = getOAuthSignature(s3, s1 + s2);
-
-await tweet(oAuthSignature, params, tweetMessage);
+await postToTwitter(
+  getOAuthSignature(apiSecret, accessTokenSecret, params),
+  params,
+  buildTweet(repo)
+);
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function getOAuthSignature(key: string, message: string): string {
-  return hmac("sha1", key, message, "utf8", "base64") + "%3D";
+function buildTweet(repo: string): string {
+  let tweet = "New {{ title }} version released! https://github.com/drashland/{{ repo }}/releases/latest";
+
+  switch (repo) {
+    case "dawn":
+      tweet = replaceTweetFields(tweet, "Dawn", repo);
+      break;
+    case "dmm":
+      tweet = replaceTweetFields(tweet, "dmm", repo);
+      break;
+    case "deno-drash":
+      tweet = replaceTweetFields(tweet, "Drash", repo);
+      break;
+    case "rhum":
+      tweet = replaceTweetFields(tweet, "Rhum", repo);
+      break;
+    case "wocket":
+      tweet = replaceTweetFields(tweet, "Wocket", repo);
+      break;
+    default:
+      throw new Error("Unknown module specified.");
+  }
+
+  return tweet;
 }
 
-function getSignaturePart1(): string {
+function getOAuthSignature(
+  apiSecret: string,
+  accessTokenSecret: string,
+  params: string[],
+): string {
+  const messagePart1 = getSignatureMessagePart1();
+  const messagePart2 = getSignatureMessagePart2(params);
+  const key = getSigningKey(apiSecret, accessTokenSecret);
+
+  return hmac(
+    "sha1",
+    key,
+    (messagePart1 + messagePart2),
+    "utf8",
+    "base64"
+  ) + "%3D";
+}
+
+function getSignatureMessagePart1(): string {
   return `POST&${
     encodeURIComponent("https://api.twitter.com/1.1/statuses/update.json")
   }&`;
 }
 
-function getSignaturePart2(params: string[]): string {
+function getSignatureMessagePart2(params: string[]): string {
   const encoded = params.map((value: string) => {
     return encodeURIComponent(value)
       .replace(/!/g, "%21");
@@ -51,7 +89,7 @@ function getSignaturePart2(params: string[]): string {
   return encoded.join("%26");
 }
 
-function getSignaturePart3(
+function getSigningKey(
   apiSecret: string,
   accessTokenSecret: string,
 ): string {
@@ -60,25 +98,37 @@ function getSignaturePart3(
   }`;
 }
 
-async function tweet(
+async function postToTwitter(
   oAuthSignature: string,
   params: string[],
-  tweetMessage: string,
+  tweet: string,
 ) {
+
+  // Remove tweet from params as this is not needed in the OAuth header
   params.pop();
+
+  // Add the generated OAuth signature as this is needed in the OAuth header
   params.push("oauth_signature=" + oAuthSignature);
 
   const authorizationHeader = "OAuth " + params.join(",");
 
   const res = await fetch(
-    "https://api.twitter.com/1.1/statuses/update.json?status=" + encodeURIComponent(tweetMessage).replace(/!/g, "%21"),
+    "https://api.twitter.com/1.1/statuses/update.json",
     {
       method: "POST",
       headers: {
         "Authorization": authorizationHeader,
+        "Content-Type": "application/x-www-form-urlencoded",
       },
+      body: `status=${encodeURIComponent(tweet).replace(/!/g, "%21")}`,
     },
   );
 
   console.log(res);
+}
+
+function replaceTweetFields(tweet: string, title: string, repo: string): string {
+  return tweet
+    .replace("{{ title }}", title)
+    .replace("{{ repo }}", repo);
 }

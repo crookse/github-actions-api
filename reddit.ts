@@ -1,39 +1,70 @@
+interface IHttpOptions {
+  access_token: string;
+  post: IPost;
+}
+
+interface IPost {
+  title: string;
+  url: string;
+}
+
 const args = Deno.args.slice();
 const username = args[0].trim();
 const password = args[1].trim(); // need to change the password
 const appId = args[2].trim();
 const appSecret= args[3].trim();
-const moduleName = args[4].trim();
+const repo = args[4].trim();
 
-let postTitle: string;
-let postUrl: string;
-
-switch (moduleName) {
-  case "drash":
-    postTitle = "New Drash version released!";
-    postUrl = "https://github.com/drashland/deno-drash/releases/latest";
-    break;
-  default:
-    throw new Error("Unknown module specified.");
-}
-
-const accessToken = await getBearerToken();
-await post(accessToken);
+await postToReddit({
+  access_token: await getAccessToken(),
+  post: buildPost(repo),
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-async function getBearerToken(): Promise<string> {
+function buildPost(repo: string): IPost {
+  let post: IPost = {
+    title: "New {{ title }} version released!",
+    url: "https://github.com/drashland/{{ repo }}/releases/latest",
+  };
+
+  switch (repo) {
+    case "dawn":
+      post = replacePostFields(post, "Dawn", repo);
+      break;
+    case "dmm":
+      post = replacePostFields(post, "dmm", repo);
+      break;
+    case "deno-drash":
+      post = replacePostFields(post, "Drash", repo);
+      break;
+    case "rhum":
+      post = replacePostFields(post, "Rhum", repo);
+      break;
+    case "wocket":
+      post = replacePostFields(post, "Wocket", repo);
+      break;
+    default:
+      throw new Error("Unknown module specified.");
+  }
+
+  return post;
+}
+
+async function getAccessToken(): Promise<string> {
   const res = await fetch(
-    `https://www.reddit.com/api/v1/access_token?grant_type=password&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+    `https://www.reddit.com/api/v1/access_token`,
     {
       method: "POST",
       headers: {
         "Authorization": "Basic " + btoa(`${appId}:${appSecret}`),
-      }
-    }
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `grant_type=password&username=${username}&password=${password}`,
+    },
   );
 
   const json = await res.json();
@@ -41,18 +72,24 @@ async function getBearerToken(): Promise<string> {
   return json.access_token;
 }
 
-async function post(accessToken: string) {
+async function postToReddit(options: IHttpOptions) {
   const res = await fetch(
     "https://oauth.reddit.com/api/submit",
     {
       method: "POST",
       headers: {
-        "Authorization": "Bearer " + accessToken,
+        "Authorization": "Bearer " + options.access_token,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: `kind=link&title=${postTitle}&sr=Deno&url=${postUrl}`,
+      body: `kind=link&title=${options.post.title}&sr=Deno&url=${options.post.url}`,
     },
   );
 
   console.log(res);
+}
+
+function replacePostFields(post: IPost, title: string, repo: string): IPost {
+  post.title = post.title.replace("{{ title }}", title);
+  post.url = post.url.replace("{{ repo }}", repo);
+  return post;
 }

@@ -25,7 +25,7 @@ jobs:
           ${{ secrets.REDDIT_PASSWORD }} \
           ${{ secrets.REDDIT_APP_ID }} \
           ${{ secrets.REDDIT_APP_SECRET }} \
-          "drash"
+          "deno-drash"
 
       - name: Post to Twitter
         run: deno run --allow-net ./twitter.ts \
@@ -33,4 +33,4 @@ jobs:
           ${{ secrets.TWITTER_CONSUMER_API_SECRET }} \
           ${{ secrets.TWITTER_ACCESS_TOKEN }} \
           ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }} \
-          "New Drash version released! https://github.com/drashland/deno-drash/releases/latest"
+          "deno-drash"
