@@ -1,9 +1,9 @@
 const args = Deno.args.slice();
-const username = args[0];
-const password = args[1]; // need to change the password
-const appId = args[2];
-const appSecret= args[3];
-const moduleName = args[4];
+const username = args[0].trim();
+const password = args[1].trim(); // need to change the password
+const appId = args[2].trim();
+const appSecret= args[3].trim();
+const moduleName = args[4].trim();
 
 let postTitle: string;
 let postUrl: string;
