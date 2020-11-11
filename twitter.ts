@@ -12,11 +12,11 @@ let sigPart1 = `POST&${
   encodeURIComponent("https://api.twitter.com/1.1/statuses/update.json")
 }&`;
 let sigPart2 = [
-  `oauth_consumer_key=${apiKey}`,
+  `oauth_consumer_key=${apiKey.trim()}`,
   `oauth_nonce=${timestamp}`,
   `oauth_signature_method=HMAC-SHA1`,
   `oauth_timestamp=${timestamp}`,
-  `oauth_token=${accessToken}`,
+  `oauth_token=${accessToken.trim()}`,
   `oauth_version=1.0`,
   `${tweet}`,
 ];
@@ -26,7 +26,7 @@ const sigPart2Encoded = sigPart2.map((value: string) => {
 sigPart2Encoded[sigPart2Encoded.length - 1] = encodeURIComponent("status=") +
   encodeURIComponent(sigPart2Encoded[sigPart2Encoded.length - 1]);
 
-const key = `${apiSecret}&${accessTokenSecret}`;
+const key = `${apiSecret.trim()}&${accessTokenSecret.trim()}`;
 const message = sigPart1 + sigPart2Encoded.join("%26");
 const oAuthSignature = getOAuthSignature(key, message);
 
@@ -36,8 +36,6 @@ function getOAuthSignature(key: string, message: string): string | Uint8Array {
 
 sigPart2.pop();
 sigPart2.push("oauth_signature=" + oAuthSignature);
-
-console.log(sigPart2);
 
 const oAuthHeader = sigPart2.join(",");
 
