@@ -10,13 +10,9 @@ console.log(moduleName);
 let postTitle: string;
 let postUrl: string;
 
-switch (moduleName) {
-  case "drash":
-    postTitle = "New Drash version released!";
-    postUrl = "https://github.com/drashland/deno-drash/releases/latest";
-    break;
-  default:
-    throw new Error("Unknown module specified.");
+if (moduleName == "drash") {
+  postTitle = "New Drash version released!";
+  postUrl = "https://github.com/drashland/deno-drash/releases/latest";
 }
 
 const accessToken = await getBearerToken();
