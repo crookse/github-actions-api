@@ -12,9 +12,11 @@ let postUrl: string;
 switch (moduleName) {
   case "drash":
     postTitle = "New Drash version released!";
-    postText = "Check out our latest release @ https://github.com/drashland/deno-drash/releases/latest"
-    postUrl = "https://drash.land/drash"
+    postText = "Check out our latest release @ https://github.com/drashland/deno-drash/releases/latest";
+    postUrl = "https://drash.land/drash";
     break;
+  default:
+    throw new Error("Unknown module specified.");
 }
 
 const accessToken = await getBearerToken();
