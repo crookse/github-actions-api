@@ -1,10 +1,7 @@
 import { hmac } from "https://denopkg.com/chiefbiiko/hmac@v1.0.2/mod.ts";
+import { argParser } from "./arg_parser.ts";
 
-let args = Deno.args.slice();
-args = args.map((arg: string) => {
-  return arg.trim();
-});
-
+const args = argParser(Deno.args.slice());
 const apiKey = args[0];
 const apiSecret = args[1];
 const accessToken = args[2];

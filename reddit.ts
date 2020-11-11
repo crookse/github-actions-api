@@ -1,3 +1,5 @@
+import { argParser } from "./arg_parser.ts";
+
 interface IHttpOptions {
   access_token: string;
   post: IPost;
@@ -8,11 +10,7 @@ interface IPost {
   url: string;
 }
 
-let args = Deno.args.slice();
-args = args.map((arg: string) => {
-  return arg.trim();
-});
-
+const args = argParser(Deno.args.slice());
 const username = args[0];
 const password = args[1];
 const appId = args[2];
