@@ -5,6 +5,8 @@ const appId = args[2];
 const appSecret= args[3];
 const moduleName = args[4];
 
+console.log(args);
+
 let postTitle: string;
 let postUrl: string;
 
