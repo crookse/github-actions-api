@@ -33,25 +33,16 @@ function buildPost(repo: string): IPost {
 
   switch (repo) {
     case "dawn":
-      post = replacePostFields(post, "Dawn", repo);
-      break;
+      return replacePostFields(post, "Dawn", repo);
     case "dmm":
-      post = replacePostFields(post, "dmm", repo);
-      break;
+      return replacePostFields(post, "dmm", repo);
     case "deno-drash":
-      post = replacePostFields(post, "Drash", repo);
-      break;
+      return replacePostFields(post, "Drash", repo);
     case "rhum":
-      post = replacePostFields(post, "Rhum", repo);
-      break;
+      return replacePostFields(post, "Rhum", repo);
     case "wocket":
-      post = replacePostFields(post, "Wocket", repo);
-      break;
-    default:
-      throw new Error("Unknown module specified.");
+      return replacePostFields(post, "Wocket", repo);
   }
-
-  return post;
 }
 
 async function getAccessToken(): Promise<string> {

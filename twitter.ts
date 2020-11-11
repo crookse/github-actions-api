@@ -32,25 +32,16 @@ function buildTweet(repo: string): string {
 
   switch (repo) {
     case "dawn":
-      tweet = replaceTweetFields(tweet, "Dawn", repo);
-      break;
+      return replaceTweetFields(tweet, "Dawn", repo);
     case "dmm":
-      tweet = replaceTweetFields(tweet, "dmm", repo);
-      break;
+      return replaceTweetFields(tweet, "dmm", repo);
     case "deno-drash":
-      tweet = replaceTweetFields(tweet, "Drash", repo);
-      break;
+      return replaceTweetFields(tweet, "Drash", repo);
     case "rhum":
-      tweet = replaceTweetFields(tweet, "Rhum", repo);
-      break;
+      return replaceTweetFields(tweet, "Rhum", repo);
     case "wocket":
-      tweet = replaceTweetFields(tweet, "Wocket", repo);
-      break;
-    default:
-      throw new Error("Unknown module specified.");
+      return replaceTweetFields(tweet, "Wocket", repo);
   }
-
-  return tweet;
 }
 
 function getOAuthSignature(
